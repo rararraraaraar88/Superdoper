@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPLOADED DATA — DIGITAL ARCHIVE</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Space Grotesk & JetBrains Mono for brutalist editorial & technical typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Space Grotesk"', '"Helvetica Neue"', 'Arial', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        stark: '#FFFFFF',
+                        void: '#000000',
+                        ash: '#F4F4F4',
+                        danger: '#D00000'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Theme Design Tokens */
+        :root {
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F7F7F7;
+            --bg-card: #FFFFFF;
+            --fg-primary: #000000;
+            --fg-muted: #666666;
+            --border-color: #000000;
+            --accent-red: #D00000;
+        }
+
+        html.dark {
+            --bg-primary: #0A0A0A;
+            --bg-secondary: #141414;
+            --bg-card: #111111;
+            --fg-primary: #F5F5F5;
+            --fg-muted: #999999;
+            --border-color: #F5F5F5;
+            --accent-red: #D00000;
+        }
+
+        /* Brutalist Reset */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--fg-primary);
+            font-family: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .surface-primary {
+            background-color: var(--bg-primary);
+            color: var(--fg-primary);
+        }
+
+        .surface-secondary {
+            background-color: var(--bg-secondary);
+            color: var(--fg-primary);
+        }
+
+        .surface-card {
+            background-color: var(--bg-card);
+            color: var(--fg-primary);
+        }
+
+        .brutal-border {
+            border-color: var(--border-color);
+        }
+
+        .text-muted {
+            color: var(--fg-muted);
+        }
+
+        /* Rounded Square File Cards */
+        .rounded-card {
+            border-radius: 20px;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+            border-left: 1px solid var(--border-color);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--fg-primary);
+        }
+
+        /* Subtle Industrial Hover */
+        .product-card:hover .artwork-svg,
+        .product-card:hover .thumb-img {
+            transform: scale(1.04);
+        }
+        .artwork-svg,
+        .thumb-img {
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+        .animate-shake {
+            animation: shake 0.35s ease-in-out;
+        }
+
+        @keyframes floatIn {
+            0% { opacity: 0; transform: translateY(14px) scale(0.96); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-float-in {
+            animation: floatIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pb-14 selection:bg-[#D00000] selection:text-white">
+
+    <!-- INSTANT CODE / SYSTEM TOAST NOTIFICATION -->
+    <div id="toast-banner" class="fixed top-16 left-1/2 -translate-x-1/2 z-[70] hidden max-w-[92vw]">
+        <div class="surface-primary border brutal-border px-4 py-3 shadow-2xl flex items-center space-x-3 font-mono text-xs">
+            <span class="w-2 h-2 bg-[#D00000] shrink-0"></span>
+            <span id="toast-text" class="font-bold tracking-wider">CODE SENT</span>
+            <button type="button" onclick="hideToast()" class="ml-2 px-1.5 py-0.5 border brutal-border text-[10px] hover:bg-[#D00000] hover:text-white hover:border-[#D00000]">×</button>
+        </div>
+    </div>
+
+    <!-- STICKY TOP NAVIGATION BAR (ULTRA-CLEAN: LOGO + EN|DE LEFT, RED UPLOAD RIGHT) -->
+    <header class="sticky top-0 z-40 surface-primary border-b brutal-border w-full">
+        <div class="flex items-center justify-between h-14 px-4 md:px-6">
+            
+            <!-- Left: Custom Brutalist Brand Logo + Title + EN | DE Switcher -->
+            <div class="flex items-center space-x-3 md:space-x-4">
+                <a href="#" onclick="return false;" class="flex items-center space-x-3">
+                    <svg width="26" height="26" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" class="shrink-0">
+                        <rect x="0.75" y="0.75" width="26.5" height="26.5" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M8 7V16C8 19.3137 10.6863 22 14 22C17.3137 22 20 19.3137 20 16V7" stroke="currentColor" stroke-width="2.2"/>
+                        <line x1="14" y1="4" x2="14" y2="16" stroke="currentColor" stroke-width="2.2"/>
+                        <rect x="12" y="13" width="4" height="4" fill="currentColor"/>
+                    </svg>
+                    <span class="font-bold tracking-tight text-base md:text-lg leading-none">UPLOADED DATA</span>
+                </a>
+
+                <!-- Minimal Language Toggle (EN | DE) -->
+                <div class="flex items-center border brutal-border text-[10px] md:text-[11px] font-mono font-bold">
+                    <button type="button" id="lang-en" onclick="setLanguage('EN')" class="px-2 py-1 transition-colors">EN</button>
+                    <button type="button" id="lang-de" onclick="setLanguage('DE')" class="px-2 py-1 transition-colors">DE</button>
+                </div>
+            </div>
+
+            <!-- Right: Prominent Sharp Red UPLOAD Button -->
+            <button id="header-upload-btn" onclick="handleUploadIntent()" class="bg-[#D00000] text-white font-bold text-xs md:text-sm tracking-[0.2em] px-5 md:px-8 h-10 border brutal-border hover:opacity-90 transition-opacity">
+                UPLOAD
+            </button>
+        </div>
+    </header>
+
+    <!-- MINIMAL METADATA STRIP -->
+    <div class="border-b brutal-border px-4 md:px-6 py-2 flex justify-between items-center text-[11px] font-mono surface-secondary">
+        <span id="meta-archive">ARCHIVE // 26</span>
+        <div class="flex items-center space-x-4">
+            <span id="meta-user-badge" class="text-muted hidden sm:inline">GUEST</span>
+            <span id="item-counter">00</span>
+        </div>
+    </div>
+
+    <!-- MAIN STOREFRONT GRID (PUBLIC ARCHIVE VISIBLE TO EVERYONE) -->
+    <main class="flex-grow flex flex-col">
+        <!-- Empty State -->
+        <div id="empty-state" class="flex-grow flex flex-col items-center justify-center p-12 text-center">
+            <div class="border brutal-border rounded-card p-10 md:p-16 max-w-sm w-full space-y-6 surface-card">
+                <div class="font-mono text-xs text-muted">00</div>
+                <div id="empty-label" class="text-sm font-bold tracking-[0.25em]">NO FILES</div>
+                <button id="empty-upload-btn" onclick="handleUploadIntent()" class="w-full bg-[#D00000] text-white font-bold text-xs tracking-[0.2em] py-3.5 border brutal-border hover:opacity-90 transition-opacity">
+                    UPLOAD
+                </button>
+            </div>
+        </div>
+
+        <!-- Product Grid -->
+        <div id="file-grid" class="hidden grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-7 p-5 md:p-8">
+            <!-- Dynamically injected uploaded files -->
+        </div>
+    </main>
+
+    <!-- PINNED BOTTOM SETTINGS & ACCOUNT BAR (STRICTLY AT THE BOTTOM) -->
+    <footer class="fixed bottom-0 left-0 right-0 z-40 surface-primary border-t brutal-border px-4 md:px-6 h-14 flex justify-between items-center text-[11px] font-mono">
+        <div class="flex items-center space-x-3 truncate pr-2">
+            <span class="font-bold">UPLOADED DATA™</span>
+            <span id="footer-archive" class="text-muted hidden sm:inline">0.00 // ARCHIVE</span>
+        </div>
+
+        <div class="flex items-center space-x-2 sm:space-x-3 shrink-0">
+            <!-- Quick Account / Login Status Pill -->
+            <button type="button" id="bottom-auth-btn" onclick="openAuthOrSettings()" class="border brutal-border px-3 py-2 text-[10px] sm:text-[11px] font-bold tracking-[0.16em] hover:bg-[#D00000] hover:text-white hover:border-[#D00000] transition-colors flex items-center space-x-2">
+                <span id="bottom-avatar-mini" class="w-4 h-4 border brutal-border overflow-hidden inline-flex items-center justify-center text-[8px]">•</span>
+                <span id="bottom-auth-label">SIGN IN</span>
+            </button>
+
+            <!-- Bottom SETTINGS Trigger Button -->
+            <button type="button" id="bottom-settings-btn" onclick="openSettingsModal()" class="border brutal-border px-3.5 py-2 text-[10px] sm:text-[11px] font-bold tracking-[0.18em] surface-secondary hover:bg-[#D00000] hover:text-white hover:border-[#D00000] transition-colors">
+                SETTINGS
+            </button>
+        </div>
+    </footer>
+
+    <!-- ===================================================================== -->
+    <!-- STEP 1: FLOATING ELEVATED SOLO PREVIEW OVERLAY                        -->
+    <!-- ===================================================================== -->
+    <div id="solo-overlay" onclick="closeSoloPreview()" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-[2px] flex flex-col items-center justify-start pt-14 md:pt-20 p-6">
+        <div onclick="event.stopPropagation(); openDownloadModal();" class="animate-float-in cursor-pointer group w-full max-w-xs sm:max-w-sm flex flex-col items-center">
+            <!-- Elevated Rounded Square Preview Card -->
+            <div id="solo-preview-box" class="w-full aspect-square surface-card border brutal-border rounded-card overflow-hidden flex items-center justify-center shadow-2xl group-hover:scale-[1.015] transition-transform">
+            </div>
+            <!-- Minimal Title & Size Underneath -->
+            <div class="w-full mt-4 px-2 flex justify-between items-center text-white font-mono text-xs">
+                <span id="solo-title" class="font-bold truncate pr-4">FILE</span>
+                <span id="solo-size" class="text-neutral-300 shrink-0">0 KB</span>
+            </div>
+            <div id="solo-uploader" class="w-full mt-1 px-2 font-mono text-[10px] text-neutral-400 truncate">
+                BY GUEST
+            </div>
+            <div id="solo-hint" class="w-full mt-2 px-2 text-center font-mono text-[10px] text-neutral-300 tracking-[0.22em]">
+                CLICK TO OPEN
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- STEP 2: MINIMAL DOWNLOAD & DELETE MODAL                               -->
+    <!-- ===================================================================== -->
+    <div id="download-modal" onclick="closeDownloadModal()" class="fixed inset-0 z-50 hidden bg-black/80 flex items-center justify-center p-4">
+        <div onclick="event.stopPropagation()" class="surface-primary border brutal-border rounded-card w-full max-w-sm overflow-hidden flex flex-col">
+            <!-- Top Bar -->
+            <div class="flex justify-between items-center border-b brutal-border px-5 py-3.5 surface-primary">
+                <span class="font-mono text-xs font-bold" id="dl-ref">UD-001</span>
+                <button id="dl-close-btn" onclick="closeDownloadModal()" class="text-[11px] font-mono font-bold px-2.5 py-1 border brutal-border hover:bg-[#D00000] hover:text-white hover:border-[#D00000] transition-colors">
+                    CLOSE
+                </button>
+            </div>
+
+            <!-- Image / File Preview -->
+            <div class="p-6 surface-secondary flex flex-col items-center">
+                <div id="dl-preview-box" class="w-full aspect-square surface-card border brutal-border rounded-card overflow-hidden flex items-center justify-center">
+                </div>
+                <div class="w-full mt-4 flex justify-between items-baseline gap-2 font-mono text-xs">
+                    <span id="dl-title" class="font-bold truncate">FILE</span>
+                    <span id="dl-size" class="text-muted shrink-0">0 KB</span>
+                </div>
+                <div id="dl-uploader" class="w-full mt-1 font-mono text-[10px] text-muted truncate">
+                    UPLOADED BY GUEST
+                </div>
+            </div>
+
+            <!-- Bold Download & Delete Actions -->
+            <div class="p-5 border-t brutal-border surface-primary space-y-2.5">
+                <button id="download-action-btn" onclick="executeFileDownload()" class="w-full bg-black text-white py-4 text-xs font-bold tracking-[0.25em] hover:bg-[#D00000] transition-colors border brutal-border">
+                    DOWNLOAD
+                </button>
+                <button id="delete-modal-btn" onclick="deleteSelectedFile()" class="w-full surface-primary text-[#D00000] py-3 text-[11px] font-mono font-bold tracking-[0.22em] border border-[#D00000] hover:bg-[#D00000] hover:text-white transition-colors">
+                    DELETE
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 3: UPLOAD FILE MODAL (WITH 5-CHAR MASTER CODE & RECEIVE CODE)   -->
+    <!-- ===================================================================== -->
+    <div id="upload-modal" class="fixed inset-0 z-50 hidden bg-black/65 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="surface-primary border brutal-border w-full max-w-md flex flex-col my-auto">
+            <div class="flex justify-between items-center border-b brutal-border px-5 py-3.5">
+                <span id="up-modal-title" class="font-bold text-xs tracking-[0.2em]">UPLOAD</span>
+                <button id="up-close-btn" onclick="closeUploadModal()" class="text-[11px] font-mono font-bold px-2.5 py-1 border brutal-border hover:bg-[#D00000] hover:text-white hover:border-[#D00000]">CLOSE</button>
+            </div>
+
+            <form id="upload-form" novalidate onsubmit="handleUploadSubmit(event)" class="p-6 space-y-4">
+                <!-- Signed-in Uploader Strip -->
+                <div class="flex justify-between items-center border brutal-border px-3 py-2 surface-secondary font-mono text-[10px]">
+                    <span id="up-as-label" class="text-muted">PUBLISHING AS</span>
+                    <span id="up-user-identity" class="font-bold truncate max-w-[60%]">USER@DOMAIN.COM</span>
+                </div>
+
+                <!-- Dropzone / Primary File Picker -->
+                <div id="drop-zone" onclick="document.getElementById('up-real-file').click()" class="border brutal-border p-6 text-center cursor-pointer hover:opacity-80 transition-opacity surface-card">
+                    <input type="file" id="up-real-file" class="hidden" onchange="handleFileSelect(event)">
+                    <div class="font-bold text-xs tracking-[0.2em] mb-1.5" id="drop-label">SELECT FILE</div>
+                    <div class="font-mono text-[11px] text-muted" id="drop-meta">CLICK OR DROP</div>
+                </div>
+
+                <!-- Optional Short Title Override -->
+                <div>
+                    <label id="up-title-label" class="block text-[10px] font-mono text-muted mb-1.5">TITLE (OPTIONAL)</label>
+                    <input type="text" id="up-title" placeholder="AUTO (OPTIONAL)" class="w-full border brutal-border surface-card px-3 py-2.5 text-xs font-mono uppercase focus:outline-none">
+                </div>
+
+                <!-- Optional Cover Image Uploader -->
+                <div>
+                    <label id="up-cover-label" class="block text-[10px] font-mono text-muted mb-1.5">COVER IMAGE (OPTIONAL)</label>
+                    <div onclick="document.getElementById('up-cover-file').click()" class="border brutal-border surface-card px-3 py-2.5 flex justify-between items-center cursor-pointer hover:opacity-80 transition-opacity">
+                        <input type="file" id="up-cover-file" accept="image/*" class="hidden" onchange="handleCoverSelect(event)">
+                        <span id="cover-label" class="font-mono text-[11px] text-muted truncate pr-2">AUTO (OPTIONAL)</span>
+                        <span class="font-mono text-[10px] font-bold border brutal-border px-1.5 py-0.5 surface-primary shrink-0">+</span>
+                    </div>
+                </div>
+
+                <!-- 5-Character Lowercase Alphanumeric Passcode Gate + GET CODE Delivery -->
+                <div class="border brutal-border p-4 surface-card">
+                    <div class="flex justify-between items-center mb-2.5 gap-2">
+                        <label for="upload-pin-input" id="up-passcode-label" class="text-[11px] font-bold tracking-[0.2em]">5-CHAR CODE</label>
+                        <button type="button" id="receive-code-btn" onclick="deliverMasterCode()" class="font-mono text-[10px] font-bold px-2 py-1 border brutal-border surface-secondary hover:bg-[#D00000] hover:text-white hover:border-[#D00000] transition-colors">
+                            GET CODE
+                        </button>
+                    </div>
+                    <input type="text" id="upload-pin-input" maxlength="5" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="•••••" class="w-full h-12 border brutal-border surface-primary text-center font-mono text-xl tracking-[0.45em] font-bold lowercase focus:outline-none">
+                    <div id="upload-pin-status" class="font-mono text-[10px] font-bold mt-2 min-h-[14px]"></div>
+                </div>
+
+                <button type="submit" id="up-submit-btn" class="w-full bg-[#D00000] text-white py-4 text-xs font-bold tracking-[0.2em] border brutal-border hover:opacity-90 transition-opacity">
+                    PUBLISH
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 4: LOGIN / SIGN IN MODAL (NAME + REQUIRED EMAIL + ANY PASSWORD) -->
+    <!-- ===================================================================== -->
+    <div id="auth-modal" class="fixed inset-0 z-50 hidden bg-black/75 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="surface-primary border brutal-border w-full max-w-md flex flex-col my-auto">
+            <div class="flex justify-between items-center border-b brutal-border px-5 py-3.5">
+                <span id="auth-modal-title" class="font-bold text-xs tracking-[0.2em]">SIGN IN</span>
+                <button id="auth-close-btn" onclick="closeAuthModal()" class="text-[11px] font-mono font-bold px-2.5 py-1 border brutal-border hover:bg-[#D00000] hover:text-white hover:border-[#D00000]">CLOSE</button>
+            </div>
+
+            <form id="auth-form" novalidate onsubmit="handleAuthSubmit(event)" class="p-6 space-y-4">
+                <!-- Name (Any text required) -->
+                <div>
+                    <label for="auth-name" id="auth-name-label" class="block text-[10px] font-mono text-muted mb-1.5">NAME</label>
+                    <input type="text" id="auth-name" required placeholder="YOUR NAME" class="w-full border brutal-border surface-card px-3 py-3 text-xs font-mono focus:outline-none">
+                </div>
+
+                <!-- Email (Always required & strictly validated) -->
+                <div>
+                    <label for="auth-email" id="auth-email-label" class="block text-[10px] font-mono text-muted mb-1.5">EMAIL (REQUIRED)</label>
+                    <input type="email" id="auth-email" required placeholder="NAME@DOMAIN.COM" class="w-full border brutal-border surface-card px-3 py-3 text-xs font-mono lowercase focus:outline-none">
+                </div>
+
+                <!-- Password (Any characters/length accepted) -->
+                <div>
+                    <label for="auth-password" id="auth-password-label" class="block text-[10px] font-mono text-muted mb-1.5">PASSWORD</label>
+                    <input type="password" id="auth-password" required placeholder="ANY PASSWORD" class="w-full border brutal-border surface-card px-3 py-3 text-xs font-mono focus:outline-none">
+                </div>
+
+                <div id="auth-error" class="font-mono text-[11px] font-bold text-[#D00000] min-h-[16px]"></div>
+
+                <button type="submit" id="auth-submit-btn" class="w-full bg-[#D00000] text-white py-4 text-xs font-bold tracking-[0.2em] border brutal-border hover:opacity-90 transition-opacity">
+                    CONTINUE
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 5: BOTTOM SETTINGS DRAWER / MODAL (PROFILE, DARK MODE, UPLOADS) -->
+    <!-- ===================================================================== -->
+    <div id="settings-modal" onclick="closeSettingsModal()" class="fixed inset-0 z-50 hidden bg-black/75 flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
+        <div onclick="event.stopPropagation()" class="surface-primary border-t sm:border brutal-border w-full max-w-lg max-h-[88vh] flex flex-col">
+            <!-- Header -->
+            <div class="flex justify-between items-center border-b brutal-border px-5 py-3.5 shrink-0">
+                <span id="settings-modal-title" class="font-bold text-xs tracking-[0.22em]">SETTINGS</span>
+                <button id="settings-close-btn" onclick="closeSettingsModal()" class="text-[11px] font-mono font-bold px-2.5 py-1 border brutal-border hover:bg-[#D00000] hover:text-white hover:border-[#D00000]">CLOSE</button>
+            </div>
+
+            <!-- Scrollable Content -->
+            <div class="p-5 sm:p-6 space-y-6 overflow-y-auto">
+                
+                <!-- SECTION 1: PROFILE & ACCOUNT -->
+                <div class="border brutal-border p-4 surface-card space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span id="set-profile-heading" class="font-mono text-[11px] font-bold tracking-[0.2em]">PROFILE</span>
+                        <button type="button" id="set-auth-action-btn" onclick="handleSettingsAuthAction()" class="font-mono text-[10px] font-bold px-2.5 py-1 border brutal-border hover:bg-[#D00000] hover:text-white hover:border-[#D00000] transition-colors">
+                            SIGN IN
+                        </button>
+                    </div>
+
+                    <!-- Signed-Out View -->
+                    <div id="settings-guest-box" class="py-3 text-center space-y-3">
+                        <p id="set-guest-desc" class="font-mono text-[11px] text-muted">NOT SIGNED IN</p>
+                        <button type="button" id="set-guest-signin-btn" onclick="closeSettingsModal(); openAuthModal(false);" class="w-full bg-[#D00000] text-white py-3 text-xs font-bold tracking-[0.2em] border brutal-border">
+                            SIGN IN
+                        </button>
+                    </div>
+
+                    <!-- Signed-In Profile Editor -->
+                    <div id="settings-user-box" class="hidden space-y-4">
+                        <div class="flex items-center space-x-4">
+                            <!-- Editable Profile Picture -->
+                            <div onclick="document.getElementById('profile-avatar-input').click()" class="relative w-16 h-16 rounded-card border brutal-border surface-secondary overflow-hidden flex items-center justify-center cursor-pointer group shrink-0">
+                                <img id="settings-avatar-img" src="" alt="AVATAR" class="hidden w-full h-full object-cover">
+                                <span id="settings-avatar-initials" class="font-mono text-lg font-bold">UD</span>
+                                <div id="set-avatar-overlay" class="absolute inset-0 bg-black/70 text-white text-[9px] font-mono font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    EDIT
+                                </div>
+                                <input type="file" id="profile-avatar-input" accept="image/*" class="hidden" onchange="handleAvatarChange(event)">
+                            </div>
+
+                            <!-- Persistent Email & Editable Name -->
+                            <div class="flex-grow min-w-0 space-y-2">
+                                <div>
+                                    <label for="settings-name-input" id="set-name-label" class="block font-mono text-[9px] text-muted mb-1">NAME</label>
+                                    <div class="flex space-x-1.5">
+                                        <input type="text" id="settings-name-input" class="w-full border brutal-border surface-primary px-2.5 py-1.5 text-xs font-mono focus:outline-none">
+                                        <button type="button" id="set-save-name-btn" onclick="saveProfileName()" class="border brutal-border px-2.5 py-1.5 font-mono text-[10px] font-bold hover:bg-[#D00000] hover:text-white hover:border-[#D00000] shrink-0">
+                                            SAVE
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="font-mono text-[10px] text-muted truncate">
+                                    <span id="set-email-label">EMAIL:</span> <span id="settings-email-display" class="font-bold"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center pt-1">
+                            <button type="button" id="set-change-photo-btn" onclick="document.getElementById('profile-avatar-input').click()" class="font-mono text-[10px] font-bold underline">
+                                CHANGE PROFILE PICTURE
+                            </button>
+                            <button type="button" id="set-get-code-btn" onclick="deliverMasterCode()" class="font-mono text-[10px] font-bold px-2.5 py-1 border brutal-border surface-secondary hover:bg-[#D00000] hover:text-white hover:border-[#D00000]">
+                                GET CODE
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 2: APPEARANCE (DARK MODE TOGGLE) -->
+                <div class="border brutal-border p-4 surface-card flex justify-between items-center">
+                    <div>
+                        <div id="set-darkmode-label" class="font-mono text-xs font-bold tracking-[0.18em]">DARK MODE</div>
+                        <div id="set-darkmode-sub" class="font-mono text-[10px] text-muted mt-0.5">STARK / INVERTED</div>
+                    </div>
+                    <button type="button" id="darkmode-toggle-btn" onclick="toggleDarkMode()" class="border brutal-border px-4 py-2 font-mono text-xs font-bold tracking-[0.18em] transition-colors">
+                        OFF
+                    </button>
+                </div>
+
+                <!-- SECTION 3: MY UPLOADS / ALL ARCHIVE MANAGEMENT (WITH DELETE) -->
+                <div class="border brutal-border p-4 surface-card space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span id="set-uploads-heading" class="font-mono text-[11px] font-bold tracking-[0.2em]">MY UPLOADS</span>
+                        <span id="set-uploads-count" class="font-mono text-[11px] text-muted">00</span>
+                    </div>
+                    <div id="settings-uploads-list" class="space-y-2 max-h-56 overflow-y-auto pr-1">
+                        <!-- Dynamically injected upload rows with DELETE buttons -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- APPLICATION LOGIC -->
+    <script>
+        const STORAGE_KEY = 'uploaded_data_vault_v4';
+        const USER_STORAGE_KEY = 'uploaded_data_user_v1';
+        const THEME_STORAGE_KEY = 'uploaded_data_theme_v1';
+        const DB_NAME = 'UploadedDataVaultDB';
+        const DB_STORE = 'files';
+
+        // 5-Character Lowercase Alphanumeric Master Upload Code
+        const MASTER_UPLOAD_CODE = ['k', '9', 'x', '4', 'm'].join('');
+
+        // Complete EN / DE Dictionary
+        const I18N = {
+            EN: {
+                upload: 'UPLOAD',
+                archiveTop: 'ARCHIVE // 26',
+                archiveFooter: '0.00 // ARCHIVE',
+                noFiles: 'NO FILES',
+                cardTag: '0.00 / OPEN',
+                clickToOpen: 'CLICK TO OPEN',
+                close: 'CLOSE',
+                download: 'DOWNLOAD',
+                downloading: 'DOWNLOADING...',
+                done: 'DONE',
+                delete: 'DELETE',
+                deleted: 'DELETED',
+                selectFile: 'SELECT FILE',
+                clickOrDrop: 'CLICK OR DROP',
+                titleOptional: 'TITLE (OPTIONAL)',
+                autoOptional: 'AUTO (OPTIONAL)',
+                coverOptional: 'COVER IMAGE (OPTIONAL)',
+                passcode: '5-CHAR CODE',
+                getCode: 'GET CODE',
+                codeSent: 'CODE SENT',
+                publish: 'PUBLISH',
+                invalidPasscode: 'INVALID 5-CHAR CODE',
+                published: 'PUBLISHED',
+                publishingAs: 'PUBLISHING AS',
+                signIn: 'SIGN IN',
+                signOut: 'SIGN OUT',
+                settings: 'SETTINGS',
+                profile: 'PROFILE',
+                notSignedIn: 'NOT SIGNED IN',
+                name: 'NAME',
+                emailRequired: 'EMAIL (REQUIRED)',
+                password: 'PASSWORD',
+                continue: 'CONTINUE',
+                errNameRequired: 'NAME IS REQUIRED',
+                errEmailInvalid: 'VALID EMAIL REQUIRED',
+                errPasswordRequired: 'PASSWORD IS REQUIRED',
+                save: 'SAVE',
+                saved: 'SAVED',
+                changePhoto: 'CHANGE PROFILE PICTURE',
+                darkMode: 'DARK MODE',
+                darkModeSub: 'STARK / INVERTED',
+                on: 'ON',
+                off: 'OFF',
+                myUploads: 'MY UPLOADS',
+                noUploadsYet: 'NO UPLOADED FILES',
+                by: 'BY',
+                uploadedBy: 'UPLOADED BY',
+                guest: 'GUEST',
+                edit: 'EDIT'
+            },
+            DE: {
+                upload: 'HOCHLADEN',
+                archiveTop: 'ARCHIV // 26',
+                archiveFooter: '0.00 // ARCHIV',
+                noFiles: 'KEINE DATEIEN',
+                cardTag: '0.00 / OFFEN',
+                clickToOpen: 'KLICKEN ZUM ÖFFNEN',
+                close: 'SCHLIESSEN',
+                download: 'HERUNTERLADEN',
+                downloading: 'WIRD GELADEN...',
+                done: 'FERTIG',
+                delete: 'LÖSCHEN',
+                deleted: 'GELÖSCHT',
+                selectFile: 'DATEI WÄHLEN',
+                clickOrDrop: 'KLICKEN ODER ABLEGEN',
+                titleOptional: 'TITEL (OPTIONAL)',
+                autoOptional: 'AUTO (OPTIONAL)',
+                coverOptional: 'TITELBILD (OPTIONAL)',
+                passcode: '5-ZEICHEN CODE',
+                getCode: 'CODE ANFORDERN',
+                codeSent: 'CODE GESENDET',
+                publish: 'VERÖFFENTLICHEN',
+                invalidPasscode: 'UNGÜLTIGER 5-ZEICHEN CODE',
+                published: 'VERÖFFENTLICHT',
+                publishingAs: 'VERÖFFENTLICHT ALS',
+                signIn: 'ANMELDEN',
+                signOut: 'ABMELDEN',
+                settings: 'EINSTELLUNGEN',
+                profile: 'PROFIL',
+                notSignedIn: 'NICHT ANGEMELDET',
+                name: 'NAME',
+                emailRequired: 'E-MAIL (ERFORDERLICH)',
+                password: 'PASSWORT',
+                continue: 'WEITER',
+                errNameRequired: 'NAME ERFORDERLICH',
+                errEmailInvalid: 'GÜLTIGE E-MAIL ERFORDERLICH',
+                errPasswordRequired: 'PASSWORT ERFORDERLICH',
+                save: 'SPEICHERN',
+                saved: 'GESPEICHERT',
+                changePhoto: 'PROFILBILD ÄNDERN',
+                darkMode: 'DUNKELMODUS',
+                darkModeSub: 'HELL / INVERTIERT',
+                on: 'EIN',
+                off: 'AUS',
+                myUploads: 'MEINE DATEIEN',
+                noUploadsYet: 'KEINE DATEIEN HOCHGELADEN',
+                by: 'VON',
+                uploadedBy: 'HOCHGELADEN VON',
+                guest: 'GAST',
+                edit: 'BEARBEITEN'
+            }
+        };
+
+        let currentLang = 'EN';
+        let isDarkMode = false;
+        let currentUser = null;
+        let pendingUploadAfterAuth = false;
+        let toastTimer = null;
+
+        const ARTWORKS = [
+            `<svg viewBox="0 0 200 200" class="w-28 h-28 artwork-svg" fill="none" stroke="currentColor" stroke-width="1.2">
+                <rect x="25" y="25" width="150" height="150"/>
+                <rect x="50" y="50" width="100" height="100"/>
+                <line x1="25" y1="25" x2="175" y2="175"/>
+                <line x1="175" y1="25" x2="25" y2="175"/>
+                <circle cx="100" cy="100" r="22" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            </svg>`,
+            `<svg viewBox="0 0 200 200" class="w-28 h-28 artwork-svg" fill="none" stroke="currentColor" stroke-width="1.2">
+                <circle cx="100" cy="100" r="75"/>
+                <circle cx="100" cy="100" r="50"/>
+                <circle cx="100" cy="100" r="25"/>
+                <line x1="100" y1="10" x2="100" y2="190"/>
+                <line x1="100" y1="100" x2="190" y2="100"/>
+            </svg>`,
+            `<svg viewBox="0 0 200 200" class="w-28 h-28 artwork-svg" fill="none" stroke="currentColor" stroke-width="1.2">
+                <polygon points="100,20 180,170 20,170"/>
+                <polygon points="100,60 150,150 50,150"/>
+                <line x1="100" y1="20" x2="100" y2="170"/>
+                <rect x="92" y="110" width="16" height="16" fill="currentColor"/>
+            </svg>`,
+            `<svg viewBox="0 0 200 200" class="w-28 h-28 artwork-svg" fill="none" stroke="currentColor" stroke-width="1.2">
+                <rect x="30" y="40" width="140" height="20"/>
+                <rect x="30" y="75" width="140" height="20"/>
+                <rect x="30" y="110" width="140" height="20"/>
+                <rect x="30" y="145" width="90" height="20" fill="currentColor"/>
+            </svg>`,
+            `<svg viewBox="0 0 200 200" class="w-28 h-28 artwork-svg" fill="none" stroke="currentColor" stroke-width="1.2">
+                <path d="M30 100 L100 30 L170 100 L100 170 Z"/>
+                <path d="M65 100 L100 65 L135 100 L100 135 Z"/>
+                <line x1="30" y1="100" x2="170" y2="100"/>
+            </svg>`,
+            `<svg viewBox="0 0 200 200" class="w-28 h-28 artwork-svg" fill="none" stroke="currentColor" stroke-width="1.2">
+                <rect x="35" y="35" width="55" height="55"/>
+                <rect x="110" y="35" width="55" height="55" fill="currentColor"/>
+                <rect x="35" y="110" width="55" height="55"/>
+                <rect x="110" y="110" width="55" height="55"/>
+            </svg>`
+        ];
+
+        let catalogFiles = [];
+        let selectedFile = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            initTheme();
+            loadUserSession();
+            await loadPersistedFiles();
+            setLanguage('EN');
+            updateUserUI();
+            renderGrid();
+            setupCodeInput();
+            setupDragAndDrop();
+        });
+
+        function t(key) {
+            return (I18N[currentLang] && I18N[currentLang][key]) || I18N.EN[key] || key;
+        }
+
+        // Toast Notification Helper
+        function showToast(msg) {
+            const banner = document.getElementById('toast-banner');
+            document.getElementById('toast-text').textContent = msg;
+            banner.classList.remove('hidden');
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                banner.classList.add('hidden');
+            }, 6000);
+        }
+
+        function hideToast() {
+            document.getElementById('toast-banner').classList.add('hidden');
+        }
+
+        // Instant Delivery of 5-Char Master Upload Code
+        function deliverMasterCode() {
+            const target = currentUser && currentUser.email ? ` (${currentUser.email.toUpperCase()})` : '';
+            showToast(`${t('codeSent')}${target}: ${MASTER_UPLOAD_CODE}`);
+        }
+
+        // Theme Initialization & Dark Mode Toggle
+        function initTheme() {
+            try {
+                isDarkMode = localStorage.getItem(THEME_STORAGE_KEY) === 'dark';
+            } catch (e) {
+                isDarkMode = false;
+            }
+            applyTheme();
+        }
+
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            try {
+                localStorage.setItem(THEME_STORAGE_KEY, isDarkMode ? 'dark' : 'light');
+            } catch (e) {}
+            applyTheme();
+        }
+
+        function applyTheme() {
+            const root = document.documentElement;
+            if (isDarkMode) {
+                root.classList.add('dark');
+            } else {
+                root.classList.remove('dark');
+            }
+            const toggleBtn = document.getElementById('darkmode-toggle-btn');
+            if (toggleBtn) {
+                toggleBtn.textContent = isDarkMode ? t('on') : t('off');
+                if (isDarkMode) {
+                    toggleBtn.style.backgroundColor = '#F5F5F5';
+                    toggleBtn.style.color = '#0A0A0A';
+                } else {
+                    toggleBtn.style.backgroundColor = '#000000';
+                    toggleBtn.style.color = '#FFFFFF';
+                }
+            }
+            updateLangToggleStyles();
+        }
+
+        function updateLangToggleStyles() {
+            const enBtn = document.getElementById('lang-en');
+            const deBtn = document.getElementById('lang-de');
+            const activeBg = isDarkMode ? '#F5F5F5' : '#000000';
+            const activeFg = isDarkMode ? '#0A0A0A' : '#FFFFFF';
+            const inactiveBg = 'transparent';
+            const inactiveFg = isDarkMode ? '#F5F5F5' : '#000000';
+
+            if (currentLang === 'EN') {
+                enBtn.style.backgroundColor = activeBg;
+                enBtn.style.color = activeFg;
+                deBtn.style.backgroundColor = inactiveBg;
+                deBtn.style.color = inactiveFg;
+            } else {
+                deBtn.style.backgroundColor = activeBg;
+                deBtn.style.color = activeFg;
+                enBtn.style.backgroundColor = inactiveBg;
+                enBtn.style.color = inactiveFg;
+            }
+        }
+
+        function setLanguage(lang) {
+            currentLang = (lang === 'DE') ? 'DE' : 'EN';
+            document.documentElement.lang = currentLang.toLowerCase();
+            updateLangToggleStyles();
+            applyTranslations();
+            updateUserUI();
+            renderGrid();
+            renderSettingsUploads();
+        }
+
+        function applyTranslations() {
+            document.getElementById('header-upload-btn').textContent = t('upload');
+            document.getElementById('meta-archive').textContent = t('archiveTop');
+            document.getElementById('empty-label').textContent = t('noFiles');
+            document.getElementById('empty-upload-btn').textContent = t('upload');
+            document.getElementById('footer-archive').textContent = t('archiveFooter');
+            document.getElementById('bottom-settings-btn').textContent = t('settings');
+
+            document.getElementById('solo-hint').textContent = t('clickToOpen');
+            document.getElementById('dl-close-btn').textContent = t('close');
+            document.getElementById('download-action-btn').textContent = t('download');
+            document.getElementById('delete-modal-btn').textContent = t('delete');
+
+            document.getElementById('up-modal-title').textContent = t('upload');
+            document.getElementById('up-close-btn').textContent = t('close');
+            document.getElementById('up-as-label').textContent = t('publishingAs');
+            document.getElementById('receive-code-btn').textContent = t('getCode');
+
+            const fileInput = document.getElementById('up-real-file');
+            if (!fileInput.files || !fileInput.files[0]) {
+                document.getElementById('drop-label').textContent = t('selectFile');
+                document.getElementById('drop-meta').textContent = t('clickOrDrop');
+            }
+
+            const coverInput = document.getElementById('up-cover-file');
+            if (!coverInput.files || !coverInput.files[0]) {
+                document.getElementById('cover-label').textContent = t('autoOptional');
+            }
+
+            document.getElementById('up-title-label').textContent = t('titleOptional');
+            document.getElementById('up-title').placeholder = t('autoOptional');
+            document.getElementById('up-cover-label').textContent = t('coverOptional');
+            document.getElementById('up-passcode-label').textContent = t('passcode');
+            document.getElementById('up-submit-btn').textContent = t('publish');
+
+            // Auth Modal Translations
+            document.getElementById('auth-modal-title').textContent = t('signIn');
+            document.getElementById('auth-close-btn').textContent = t('close');
+            document.getElementById('auth-name-label').textContent = t('name');
+            document.getElementById('auth-email-label').textContent = t('emailRequired');
+            document.getElementById('auth-password-label').textContent = t('password');
+            document.getElementById('auth-submit-btn').textContent = t('continue');
+
+            // Settings Modal Translations
+            document.getElementById('settings-modal-title').textContent = t('settings');
+            document.getElementById('settings-close-btn').textContent = t('close');
+            document.getElementById('set-profile-heading').textContent = t('profile');
+            document.getElementById('set-guest-desc').textContent = t('notSignedIn');
+            document.getElementById('set-guest-signin-btn').textContent = t('signIn');
+            document.getElementById('set-avatar-overlay').textContent = t('edit');
+            document.getElementById('set-name-label').textContent = t('name');
+            document.getElementById('set-save-name-btn').textContent = t('save');
+            document.getElementById('set-change-photo-btn').textContent = t('changePhoto');
+            document.getElementById('set-get-code-btn').textContent = t('getCode');
+            document.getElementById('set-darkmode-label').textContent = t('darkMode');
+            document.getElementById('set-darkmode-sub').textContent = t('darkModeSub');
+            document.getElementById('darkmode-toggle-btn').textContent = isDarkMode ? t('on') : t('off');
+            document.getElementById('set-uploads-heading').textContent = t('myUploads');
+        }
+
+        // User Session Persistence & UI Sync
+        function loadUserSession() {
+            try {
+                const raw = localStorage.getItem(USER_STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (parsed && parsed.email) {
+                        currentUser = parsed;
+                    }
+                }
+            } catch (e) {
+                currentUser = null;
+            }
+        }
+
+        function saveUserSession() {
+            try {
+                if (currentUser) {
+                    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(currentUser));
+                } else {
+                    localStorage.removeItem(USER_STORAGE_KEY);
+                }
+            } catch (e) {}
+        }
+
+        function updateUserUI() {
+            const metaUserBadge = document.getElementById('meta-user-badge');
+            const bottomAuthLabel = document.getElementById('bottom-auth-label');
+            const bottomAvatarMini = document.getElementById('bottom-avatar-mini');
+            const setAuthActionBtn = document.getElementById('set-auth-action-btn');
+            const guestBox = document.getElementById('settings-guest-box');
+            const userBox = document.getElementById('settings-user-box');
+
+            if (currentUser) {
+                const initials = (currentUser.name || 'UD').slice(0, 2).toUpperCase();
+                metaUserBadge.textContent = `${currentUser.name} // ${currentUser.email}`;
+                bottomAuthLabel.textContent = currentUser.name;
+
+                if (currentUser.avatar) {
+                    bottomAvatarMini.innerHTML = `<img src="${currentUser.avatar}" class="w-full h-full object-cover" alt="">`;
+                } else {
+                    bottomAvatarMini.textContent = initials;
+                }
+
+                setAuthActionBtn.textContent = t('signOut');
+                guestBox.classList.add('hidden');
+                userBox.classList.remove('hidden');
+
+                document.getElementById('settings-name-input').value = currentUser.name || '';
+                document.getElementById('settings-email-display').textContent = currentUser.email;
+                document.getElementById('up-user-identity').textContent = `${currentUser.name} (${currentUser.email})`;
+
+                const avatarImg = document.getElementById('settings-avatar-img');
+                const avatarInit = document.getElementById('settings-avatar-initials');
+                if (currentUser.avatar) {
+                    avatarImg.src = currentUser.avatar;
+                    avatarImg.classList.remove('hidden');
+                    avatarInit.classList.add('hidden');
+                } else {
+                    avatarImg.classList.add('hidden');
+                    avatarInit.classList.remove('hidden');
+                    avatarInit.textContent = initials;
+                }
+            } else {
+                metaUserBadge.textContent = t('guest');
+                bottomAuthLabel.textContent = t('signIn');
+                bottomAvatarMini.textContent = '•';
+                setAuthActionBtn.textContent = t('signIn');
+                guestBox.classList.remove('hidden');
+                userBox.classList.add('hidden');
+                document.getElementById('up-user-identity').textContent = t('guest');
+            }
+        }
+
+        function handleUploadIntent() {
+            if (!currentUser) {
+                openAuthModal(true);
+                return;
+            }
+            openUploadModal();
+        }
+
+        function openAuthOrSettings() {
+            if (currentUser) {
+                openSettingsModal();
+            } else {
+                openAuthModal(false);
+            }
+        }
+
+        function openAuthModal(proceedToUpload = false) {
+            pendingUploadAfterAuth = proceedToUpload;
+            document.getElementById('auth-error').textContent = '';
+            document.getElementById('auth-modal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('auth-name').focus(), 50);
+        }
+
+        function closeAuthModal() {
+            document.getElementById('auth-modal').classList.add('hidden');
+            pendingUploadAfterAuth = false;
+        }
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(email || '').trim());
+        }
+
+        function handleAuthSubmit(e) {
+            e.preventDefault();
+            const nameVal = document.getElementById('auth-name').value.trim();
+            const emailVal = document.getElementById('auth-email').value.trim().toLowerCase();
+            const passVal = document.getElementById('auth-password').value;
+            const errEl = document.getElementById('auth-error');
+
+            if (!nameVal) {
+                errEl.textContent = t('errNameRequired');
+                return;
+            }
+            if (!emailVal || !isValidEmail(emailVal)) {
+                errEl.textContent = t('errEmailInvalid');
+                return;
+            }
+            if (!passVal || passVal.length === 0) {
+                errEl.textContent = t('errPasswordRequired');
+                return;
+            }
+
+            const existingAvatar = (currentUser && currentUser.email === emailVal) ? currentUser.avatar : null;
+            currentUser = {
+                name: nameVal,
+                email: emailVal,
+                password: passVal,
+                avatar: existingAvatar
+            };
+            saveUserSession();
+            updateUserUI();
+
+            const goUpload = pendingUploadAfterAuth;
+            closeAuthModal();
+            if (goUpload) {
+                openUploadModal();
+            }
+        }
+
+        function handleSettingsAuthAction() {
+            if (currentUser) {
+                currentUser = null;
+                saveUserSession();
+                updateUserUI();
+                renderSettingsUploads();
+            } else {
+                closeSettingsModal();
+                openAuthModal(false);
+            }
+        }
+
+        function saveProfileName() {
+            if (!currentUser) return;
+            const newName = document.getElementById('settings-name-input').value.trim();
+            if (!newName) return;
+            currentUser.name = newName;
+            saveUserSession();
+            updateUserUI();
+            showToast(t('saved'));
+        }
+
+        function handleAvatarChange(e) {
+            const file = e.target.files[0];
+            if (!file || !currentUser) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const size = 256;
+                    canvas.width = size;
+                    canvas.height = size;
+                    const ctx = canvas.getContext('2d');
+                    const minSide = Math.min(img.width, img.height);
+                    const sx = (img.width - minSide) / 2;
+                    const sy = (img.height - minSide) / 2;
+                    ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+                    currentUser.avatar = canvas.toDataURL('image/jpeg', 0.85);
+                    saveUserSession();
+                    updateUserUI();
+                    showToast(t('saved'));
+                };
+                img.src = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Settings Modal Controls
+        function openSettingsModal() {
+            updateUserUI();
+            renderSettingsUploads();
+            document.getElementById('settings-modal').classList.remove('hidden');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settings-modal').classList.add('hidden');
+        }
+
+        function renderSettingsUploads() {
+            const listEl = document.getElementById('settings-uploads-list');
+            const countEl = document.getElementById('set-uploads-count');
+            if (!listEl || !countEl) return;
+
+            const userFiles = currentUser
+                ? catalogFiles.filter(f => f.uploaderEmail === currentUser.email)
+                : catalogFiles;
+
+            countEl.textContent = String(userFiles.length).padStart(2, '0');
+
+            if (userFiles.length === 0) {
+                listEl.innerHTML = `<div class="py-4 text-center font-mono text-[11px] text-muted">${t('noUploadsYet')}</div>`;
+                return;
+            }
+
+            listEl.innerHTML = userFiles.map(file => `
+                <div class="border brutal-border p-2.5 flex items-center justify-between gap-2 surface-primary">
+                    <div onclick="closeSettingsModal(); openSoloPreview('${file.id}');" class="flex items-center space-x-2.5 min-w-0 cursor-pointer flex-grow">
+                        <div class="w-10 h-10 rounded-lg border brutal-border overflow-hidden flex items-center justify-center shrink-0 surface-card">
+                            ${getMiniThumbMarkup(file)}
+                        </div>
+                        <div class="min-w-0">
+                            <div class="font-mono text-xs font-bold truncate">${file.title}</div>
+                            <div class="font-mono text-[10px] text-muted truncate">${file.size} // ${file.uploaderName || t('guest')}</div>
+                        </div>
+                    </div>
+                    <button type="button" onclick="deleteFileById('${file.id}')" class="border border-[#D00000] text-[#D00000] px-2.5 py-1.5 font-mono text-[10px] font-bold hover:bg-[#D00000] hover:text-white transition-colors shrink-0">
+                        ${t('delete')}
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function getMiniThumbMarkup(file) {
+            const coverSrc = file.coverBlobUrl || file.coverDataUrl;
+            if (coverSrc) {
+                return `<img src="${coverSrc}" alt="" class="w-full h-full object-cover">`;
+            }
+            const imgSrc = file.blobUrl || file.dataUrl;
+            if (file.isImage && imgSrc) {
+                return `<img src="${imgSrc}" alt="" class="w-full h-full object-cover">`;
+            }
+            return `<span class="font-mono text-[9px] font-bold">${file.format}</span>`;
+        }
+
+        // IndexedDB + LocalStorage Persistence for Uploaded Files
+        function openVaultDB() {
+            return new Promise((resolve, reject) => {
+                if (!window.indexedDB) return reject('No IndexedDB');
+                const req = indexedDB.open(DB_NAME, 1);
+                req.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains(DB_STORE)) {
+                        db.createObjectStore(DB_STORE, { keyPath: 'id' });
+                    }
+                };
+                req.onsuccess = (e) => resolve(e.target.result);
+                req.onerror = (e) => reject(e);
+            });
+        }
+
+        async function loadPersistedFiles() {
+            try {
+                const db = await openVaultDB();
+                const items = await new Promise((resolve, reject) => {
+                    const tx = db.transaction(DB_STORE, 'readonly');
+                    const store = tx.objectStore(DB_STORE);
+                    const req = store.getAll();
+                    req.onsuccess = () => resolve(req.result || []);
+                    req.onerror = () => reject([]);
+                });
+                if (items.length > 0) {
+                    items.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                    catalogFiles = items;
+                    return;
+                }
+            } catch (e) {}
+
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed)) {
+                        catalogFiles = parsed;
+                    }
+                }
+            } catch (e) {
+                catalogFiles = [];
+            }
+        }
+
+        async function saveFileRecord(record) {
+            try {
+                const db = await openVaultDB();
+                await new Promise((resolve, reject) => {
+                    const tx = db.transaction(DB_STORE, 'readwrite');
+                    tx.objectStore(DB_STORE).put(record);
+                    tx.oncomplete = () => resolve();
+                    tx.onerror = () => reject();
+                });
+            } catch (e) {}
+
+            try {
+                const lightweight = catalogFiles.map(f => ({
+                    id: f.id,
+                    title: f.title,
+                    originalName: f.originalName,
+                    format: f.format,
+                    size: f.size,
+                    isImage: f.isImage,
+                    artIndex: f.artIndex,
+                    uploaderName: f.uploaderName,
+                    uploaderEmail: f.uploaderEmail,
+                    createdAt: f.createdAt,
+                    dataUrl: (f.dataUrl && f.dataUrl.length < 400000) ? f.dataUrl : null,
+                    coverDataUrl: (f.coverDataUrl && f.coverDataUrl.length < 400000) ? f.coverDataUrl : null
+                }));
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(lightweight));
+            } catch (e) {}
+        }
+
+        async function removeFileRecord(fileId) {
+            try {
+                const db = await openVaultDB();
+                await new Promise((resolve) => {
+                    const tx = db.transaction(DB_STORE, 'readwrite');
+                    tx.objectStore(DB_STORE).delete(fileId);
+                    tx.oncomplete = () => resolve();
+                    tx.onerror = () => resolve();
+                });
+            } catch (e) {}
+
+            try {
+                const lightweight = catalogFiles.map(f => ({
+                    id: f.id,
+                    title: f.title,
+                    originalName: f.originalName,
+                    format: f.format,
+                    size: f.size,
+                    isImage: f.isImage,
+                    artIndex: f.artIndex,
+                    uploaderName: f.uploaderName,
+                    uploaderEmail: f.uploaderEmail,
+                    createdAt: f.createdAt,
+                    dataUrl: (f.dataUrl && f.dataUrl.length < 400000) ? f.dataUrl : null,
+                    coverDataUrl: (f.coverDataUrl && f.coverDataUrl.length < 400000) ? f.coverDataUrl : null
+                }));
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(lightweight));
+            } catch (e) {}
+        }
+
+        async function deleteFileById(fileId) {
+            const idx = catalogFiles.findIndex(f => f.id === fileId);
+            if (idx === -1) return;
+            const target = catalogFiles[idx];
+            if (target.blobUrl) URL.revokeObjectURL(target.blobUrl);
+            if (target.coverBlobUrl) URL.revokeObjectURL(target.coverBlobUrl);
+
+            catalogFiles.splice(idx, 1);
+            await removeFileRecord(fileId);
+
+            if (selectedFile && selectedFile.id === fileId) {
+                closeDownloadModal();
+                closeSoloPreview();
+            }
+            renderGrid();
+            renderSettingsUploads();
+            showToast(t('deleted'));
+        }
+
+        function deleteSelectedFile() {
+            if (!selectedFile) return;
+            deleteFileById(selectedFile.id);
+        }
+
+        function formatBytes(bytes) {
+            if (!bytes || bytes === 0) return '0 KB';
+            if (bytes < 1024) return `${bytes} B`;
+            const kb = bytes / 1024;
+            if (kb < 1024) return `${Math.round(kb)} KB`;
+            const mb = kb / 1024;
+            if (mb < 1024) return `${mb.toFixed(1)} MB`;
+            return `${(mb / 1024).toFixed(2)} GB`;
+        }
+
+        function getPreviewMarkup(file, isLarge = false) {
+            const coverSrc = file.coverBlobUrl || file.coverDataUrl;
+            if (coverSrc) {
+                return `<img src="${coverSrc}" alt="${file.title}" class="w-full h-full object-cover ${isLarge ? '' : 'thumb-img'}">`;
+            }
+            const imgSrc = file.blobUrl || file.dataUrl;
+            if (file.isImage && imgSrc) {
+                return `<img src="${imgSrc}" alt="${file.title}" class="w-full h-full object-cover ${isLarge ? '' : 'thumb-img'}">`;
+            }
+            return `
+                <div class="flex flex-col items-center justify-center p-4">
+                    ${ARTWORKS[file.artIndex % ARTWORKS.length]}
+                    <span class="mt-2 font-mono text-[10px] font-bold tracking-widest border brutal-border px-2 py-0.5 surface-primary">${file.format}</span>
+                </div>
+            `;
+        }
+
+        // Render Rounded Square Cards Grid (Publicly visible to anyone)
+        function renderGrid() {
+            const grid = document.getElementById('file-grid');
+            const emptyState = document.getElementById('empty-state');
+            document.getElementById('item-counter').textContent = String(catalogFiles.length).padStart(2, '0');
+
+            if (catalogFiles.length === 0) {
+                grid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            grid.classList.remove('hidden');
+
+            grid.innerHTML = catalogFiles.map((file) => `
+                <article onclick="openSoloPreview('${file.id}')" class="product-card group cursor-pointer flex flex-col">
+                    <!-- Rounded Square Thumbnail / Emblem -->
+                    <div class="w-full aspect-square border brutal-border rounded-card surface-card overflow-hidden flex items-center justify-center">
+                        ${getPreviewMarkup(file, false)}
+                    </div>
+
+                    <!-- Minimal Filename, Size, Uploader & Open Status Underneath -->
+                    <div class="pt-2.5 px-1 flex flex-col gap-0.5">
+                        <div class="flex justify-between items-baseline gap-2">
+                            <h3 class="font-bold text-xs tracking-wider truncate">${file.title}</h3>
+                            <span class="font-mono text-[10px] text-muted shrink-0">${file.size}</span>
+                        </div>
+                        <div class="flex justify-between items-center gap-2 font-mono text-[10px] text-muted">
+                            <span>${t('cardTag')}</span>
+                            <span class="truncate max-w-[52%]">${t('by')} ${file.uploaderName || t('guest')}</span>
+                        </div>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        // Step 1: Floating Elevated Solo Preview
+        function openSoloPreview(fileId) {
+            selectedFile = catalogFiles.find(f => f.id === fileId);
+            if (!selectedFile) return;
+
+            document.getElementById('solo-preview-box').innerHTML = getPreviewMarkup(selectedFile, true);
+            document.getElementById('solo-title').textContent = selectedFile.title;
+            document.getElementById('solo-size').textContent = selectedFile.size;
+            document.getElementById('solo-uploader').textContent = `${t('by')} ${selectedFile.uploaderName || t('guest')}`;
+            document.getElementById('solo-hint').textContent = t('clickToOpen');
+
+            document.getElementById('solo-overlay').classList.remove('hidden');
+        }
+
+        function closeSoloPreview() {
+            document.getElementById('solo-overlay').classList.add('hidden');
+        }
+
+        // Step 2: Second Minimal Modal with DOWNLOAD & DELETE Buttons
+        function openDownloadModal() {
+            if (!selectedFile) return;
+            closeSoloPreview();
+
+            document.getElementById('dl-ref').textContent = selectedFile.id;
+            document.getElementById('dl-preview-box').innerHTML = getPreviewMarkup(selectedFile, true);
+            document.getElementById('dl-title').textContent = selectedFile.title;
+            document.getElementById('dl-size').textContent = selectedFile.size;
+            document.getElementById('dl-uploader').textContent = `${t('uploadedBy')} ${selectedFile.uploaderName || t('guest')}`;
+
+            const btn = document.getElementById('download-action-btn');
+            btn.textContent = t('download');
+            document.getElementById('delete-modal-btn').textContent = t('delete');
+
+            document.getElementById('download-modal').classList.remove('hidden');
+        }
+
+        function closeDownloadModal() {
+            document.getElementById('download-modal').classList.add('hidden');
+            selectedFile = null;
+        }
+
+        function executeFileDownload() {
+            if (!selectedFile) return;
+            const btn = document.getElementById('download-action-btn');
+            btn.textContent = t('downloading');
+
+            const a = document.createElement('a');
+            const downloadName = selectedFile.originalName || selectedFile.title;
+            if (selectedFile.blobUrl) {
+                a.href = selectedFile.blobUrl;
+                a.download = downloadName;
+            } else if (selectedFile.dataUrl) {
+                a.href = selectedFile.dataUrl;
+                a.download = downloadName;
+            } else {
+                const blob = new Blob([`UPLOADED DATA // ${selectedFile.id} // ${selectedFile.title}`], { type: 'text/plain;charset=utf-8' });
+                a.href = URL.createObjectURL(blob);
+                a.download = `${selectedFile.title}.txt`;
+            }
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            setTimeout(() => {
+                btn.textContent = t('done');
+            }, 300);
+        }
+
+        // Normalize 5-Character Lowercase Alphanumeric Code (a-z, 0-9, plus Arabic-Indic digits)
+        function normalizeAlphaCode(str) {
+            return String(str || '')
+                .replace(/[٠-٩]/g, d => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)))
+                .replace(/[۰-۹]/g, d => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)))
+                .toLowerCase()
+                .replace(/[^a-z0-9]/g, '')
+                .trim();
+        }
+
+        function setupCodeInput() {
+            const pinInput = document.getElementById('upload-pin-input');
+            pinInput.addEventListener('input', (e) => {
+                e.target.value = normalizeAlphaCode(e.target.value).slice(0, 5);
+                document.getElementById('upload-pin-status').textContent = '';
+                pinInput.classList.remove('border-[#D00000]');
+            });
+        }
+
+        // Upload Modal Controls
+        function openUploadModal() {
+            updateUserUI();
+            document.getElementById('upload-pin-status').textContent = '';
+            const pinInput = document.getElementById('upload-pin-input');
+            pinInput.value = '';
+            pinInput.classList.remove('border-[#D00000]');
+            document.getElementById('drop-zone').classList.remove('border-[#D00000]');
+            applyTranslations();
+            document.getElementById('upload-modal').classList.remove('hidden');
+        }
+
+        function closeUploadModal() {
+            document.getElementById('upload-modal').classList.add('hidden');
+            document.getElementById('upload-form').reset();
+            document.getElementById('drop-label').textContent = t('selectFile');
+            document.getElementById('drop-meta').textContent = t('clickOrDrop');
+            document.getElementById('cover-label').textContent = t('autoOptional');
+            document.getElementById('upload-pin-status').textContent = '';
+            document.getElementById('drop-zone').classList.remove('border-[#D00000]');
+            document.getElementById('upload-pin-input').classList.remove('border-[#D00000]');
+        }
+
+        function setupDragAndDrop() {
+            const dropZone = document.getElementById('drop-zone');
+            const fileInput = document.getElementById('up-real-file');
+
+            ['dragenter', 'dragover'].forEach(evtName => {
+                dropZone.addEventListener(evtName, (e) => {
+                    e.preventDefault();
+                    dropZone.classList.add('opacity-80');
+                });
+            });
+
+            ['dragleave', 'drop'].forEach(evtName => {
+                dropZone.addEventListener(evtName, (e) => {
+                    e.preventDefault();
+                    dropZone.classList.remove('opacity-80');
+                });
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileSelect({ target: fileInput });
+                }
+            });
+        }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            document.getElementById('drop-zone').classList.remove('border-[#D00000]');
+            document.getElementById('drop-label').textContent = file.name.toUpperCase();
+            document.getElementById('drop-meta').textContent = formatBytes(file.size);
+        }
+
+        function handleCoverSelect(e) {
+            const cover = e.target.files[0];
+            if (!cover) {
+                document.getElementById('cover-label').textContent = t('autoOptional');
+                return;
+            }
+            document.getElementById('cover-label').textContent = cover.name.toUpperCase();
+        }
+
+        function readFileAsDataURL(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (evt) => resolve(evt.target.result);
+                reader.onerror = () => resolve(null);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function handleUploadSubmit(e) {
+            e.preventDefault();
+            if (!currentUser) {
+                closeUploadModal();
+                openAuthModal(true);
+                return;
+            }
+
+            const fileInput = document.getElementById('up-real-file');
+            const dropZone = document.getElementById('drop-zone');
+            const pinInput = document.getElementById('upload-pin-input');
+            const statusEl = document.getElementById('upload-pin-status');
+
+            // 1. Validate file is chosen
+            if (!fileInput.files || !fileInput.files[0]) {
+                dropZone.classList.add('border-[#D00000]', 'animate-shake');
+                statusEl.textContent = t('selectFile');
+                statusEl.className = 'font-mono text-[10px] font-bold mt-2 text-[#D00000]';
+                setTimeout(() => dropZone.classList.remove('animate-shake'), 400);
+                return;
+            }
+
+            // 2. Validate 5-character lowercase alphanumeric master code (k9x4m)
+            const enteredCode = normalizeAlphaCode(pinInput.value);
+            if (enteredCode !== MASTER_UPLOAD_CODE) {
+                statusEl.textContent = t('invalidPasscode');
+                statusEl.className = 'font-mono text-[10px] font-bold mt-2 text-[#D00000]';
+                pinInput.classList.add('border-[#D00000]', 'animate-shake');
+                pinInput.value = '';
+                pinInput.focus();
+                setTimeout(() => {
+                    pinInput.classList.remove('animate-shake');
+                }, 400);
+                return;
+            }
+
+            // 3. Publish immediately to public storefront grid
+            statusEl.textContent = t('published');
+            statusEl.className = 'font-mono text-[10px] font-bold mt-2';
+
+            const uploaded = fileInput.files[0];
+            const coverInput = document.getElementById('up-cover-file');
+            const coverFile = (coverInput.files && coverInput.files[0]) ? coverInput.files[0] : null;
+
+            const customTitle = document.getElementById('up-title').value.trim().toUpperCase();
+            const extMatch = uploaded.name.split('.');
+            const ext = extMatch.length > 1 ? extMatch.pop().toUpperCase() : 'BIN';
+            const displayTitle = customTitle || uploaded.name.toUpperCase();
+            const blobUrl = URL.createObjectURL(uploaded);
+            const isImage = uploaded.type.startsWith('image/');
+            const newId = `UD-${String(Date.now()).slice(-4)}`;
+
+            const dataUrl = await readFileAsDataURL(uploaded);
+            const coverDataUrl = coverFile ? await readFileAsDataURL(coverFile) : null;
+
+            const newObject = {
+                id: newId,
+                title: displayTitle,
+                originalName: uploaded.name,
+                format: ext,
+                size: formatBytes(uploaded.size),
+                isImage: isImage,
+                artIndex: catalogFiles.length % ARTWORKS.length,
+                uploaderName: currentUser.name,
+                uploaderEmail: currentUser.email,
+                createdAt: Date.now(),
+                blobUrl: blobUrl,
+                dataUrl: dataUrl,
+                coverBlobUrl: coverFile ? URL.createObjectURL(coverFile) : null,
+                coverDataUrl: coverDataUrl
+            };
+
+            catalogFiles.unshift(newObject);
+            await saveFileRecord(newObject);
+            closeUploadModal();
+            renderGrid();
+            renderSettingsUploads();
+        }
+    </script>
+</body>
+</html>
